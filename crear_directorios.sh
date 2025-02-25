@@ -98,7 +98,7 @@ while true; do
     </style>
 </head>
 <body>
-    <h1>Información del Sistema</h1>
+    <h1>Quiz Monroy_2004</h1>
     <button onclick="cargarContenido('puertos_estado.txt')">Ver Puertos Abiertos</button>
     <button onclick="cargarContenido('servicios_estado.txt')">Ver Servicios en Ejecución</button>
     <button onclick="cargarContenido('wifi_limpio.txt')">Ver Redes WiFi</button>
