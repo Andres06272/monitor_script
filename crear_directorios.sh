@@ -136,7 +136,7 @@ while true; do
     </style>
 </head>
 <body>
-    <h1>Analizador de Red</h1>
+    <h1>Quiz MONROY_2004</h1>
     <div class="btn-container">
         <button onclick="cargarContenido('puertos_estado.txt')">Mostrar Puertos Disponibles</button>
         <button onclick="cargarContenido('servicios_estado.txt')">Ver Procesos Activos</button>
