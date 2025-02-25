@@ -119,9 +119,9 @@ while true; do
 EOF
 
 # Configurar la IP, usuario y contraseña de la máquina remota
-REMOTE_USER="andres"
-REMOTE_IP="192.168.0.5"  # Cambia esto por la IP de la máquina remota
-REMOTE_PASS="andres06271"
+REMOTE_USER="lredes02"
+REMOTE_IP="172.16.14.84"  # Cambia esto por la IP de la máquina remota
+REMOTE_PASS="lredes02"
 REMOTE_PATH="/var/www/html"
 
 # Enviar los archivos con sshpass y rsync usando una carpeta temporal
