@@ -161,7 +161,7 @@ EOF
 # Configurar la IP, usuario y contraseña de la máquina remota
 REMOTE_USER="lredes11"
 REMOTE_IP="172.16.14.83"  # Cambia esto por la IP de la máquina remota
-REMOTE_PASS="adminlredes11"
+REMOTE_PASS="lredes11"
 REMOTE_PATH="/var/www/html"
 
 # Enviar los archivos con sshpass y rsync usando una carpeta temporal
