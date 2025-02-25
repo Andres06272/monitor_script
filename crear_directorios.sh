@@ -88,24 +88,63 @@ while true; do
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Quiz Monroy_2004</title>
+    <title>Analizador de Red</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
-        h1 { color: #2c3e50; }
-        button { padding: 10px 20px; margin: 10px; cursor: pointer; border: none; background-color: #3498db; color: white; border-radius: 5px; }
-        button:hover { background-color: #2980b9; }
-        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; text-align: left; max-width: 600px; margin: auto; }
+        body {
+            font-family: 'Verdana', sans-serif;
+            background: #121212;
+            color: #ffffff;
+            text-align: center;
+            margin: 40px;
+        }
+        h1 {
+            color: #00c3ff;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #00c3ff;
+            background: transparent;
+            color: #00c3ff;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #00c3ff;
+            color: #121212;
+        }
+        .content-box {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: 30px auto;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(0, 195, 255, 0.5);
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
-    <h1>Quiz Monroy_2004</h1>
-    <button onclick="cargarContenido('puertos_estado.txt')">Ver Puertos Abiertos</button>
-    <button onclick="cargarContenido('servicios_estado.txt')">Ver Servicios en Ejecución</button>
-    <button onclick="cargarContenido('wifi_limpio.txt')">Ver Redes WiFi</button>
-    <div id="contenido">
-        <pre id="datos"></pre>
+    <h1>Analizador de Red</h1>
+    <div class="btn-container">
+        <button onclick="cargarContenido('puertos_estado.txt')">Mostrar Puertos Disponibles</button>
+        <button onclick="cargarContenido('servicios_estado.txt')">Ver Procesos Activos</button>
+        <button onclick="cargarContenido('wifi_limpio.txt')">Listar Redes WiFi</button>
     </div>
-
+    <div class="content-box">
+        <pre id="datos">Selecciona una opción para ver la información...</pre>
+    </div>
     <script>
         function cargarContenido(archivo) {
             fetch(archivo)
@@ -116,12 +155,13 @@ while true; do
     </script>
 </body>
 </html>
+
 EOF
 
 # Configurar la IP, usuario y contraseña de la máquina remota
-REMOTE_USER="lredes02"
-REMOTE_IP="172.16.14.84"  # Cambia esto por la IP de la máquina remota
-REMOTE_PASS="lredes02"
+REMOTE_USER="lredes11"
+REMOTE_IP="172.16.14.83"  # Cambia esto por la IP de la máquina remota
+REMOTE_PASS="adminlredes11"
 REMOTE_PATH="/var/www/html"
 
 # Enviar los archivos con sshpass y rsync usando una carpeta temporal
