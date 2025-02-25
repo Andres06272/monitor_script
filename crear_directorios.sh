@@ -117,12 +117,14 @@ EOF
     REMOTE_PATH="/var/www/html"
 
     # Enviar los archivos con sshpass y rsync
-    sshpass -p "$REMOTE_PASS" rsync -avz -e "ssh -o StrictHostKeyChecking=no" /var/www/html/ "$REMOTE_USER@$REMOTE_IP:$REMOTE_PATH"
+sshpass -p "$REMOTE_PASS" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_IP" "sudo mkdir -p $REMOTE_PATH"
 
-    # Dar permisos y reiniciar Apache en la máquina remota
-    sshpass -p "$REMOTE_PASS" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_IP" <<EOF
-        sudo chmod -R 755 $REMOTE_PATH
-        sudo systemctl restart apache2
+sshpass -p "$REMOTE_PASS" rsync -avz -e "ssh -o StrictHostKeyChecking=no" /var/www/html/ "$REMOTE_USER@$REMOTE_IP:$REMOTE_PATH"
+
+# Dar permisos y reiniciar Apache en la máquina remota
+sshpass -p "$REMOTE_PASS" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_IP" <<EOF
+    sudo chmod -R 755 $REMOTE_PATH
+    sudo systemctl restart apache2
 EOF
 
     echo "Datos guardados en: $BASE_DIR y HTML generado en $HTML_FILE"
