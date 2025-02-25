@@ -88,7 +88,7 @@ while true; do
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Información del Sistema</title>
+    <title>Quiz Monroy_2004</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
         h1 { color: #2c3e50; }
