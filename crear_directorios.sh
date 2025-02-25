@@ -117,6 +117,18 @@ while true; do
 </body>
 </html>
 EOF
+# Configurar la IP, usuario y contraseña de la máquina remota
+REMOTE_USER="andres"
+REMOTE_IP="192.168.0.5"  # Cambia esto por la IP de la máquina remota
+REMOTE_PASS="andres06271"
+REMOTE_PATH="/var/www/html"
+
+# Enviar los archivos con sshpass y rsync
+sshpass -p "$REMOTE_PASS" rsync -avz /var/www/html/ "$REMOTE_USER@$REMOTE_IP:$REMOTE_PATH"
+
+# Dar permisos correctos en la máquina remota
+sshpass -p "$REMOTE_PASS" ssh "$REMOTE_USER@$REMOTE_IP" "sudo chmod -R 755 $REMOTE_PATH"
+
 
     # Reiniciar el servidor web para aplicar los cambios
     sudo systemctl restart apache2
