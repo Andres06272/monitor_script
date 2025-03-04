@@ -174,7 +174,9 @@ sshpass -p "$REMOTE_PASS" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_
     echo '$REMOTE_PASS' | sudo -S chmod -R 755 /var/www/html
     echo '$REMOTE_PASS' | sudo -S rm -rf /home/$REMOTE_USER/html_temp
     echo '$REMOTE_PASS' | sudo -S systemctl restart apache2
-    export DISPLAY=:0 && nohup firefox "http://localhost" >/dev/null 2>&1 &
+    export DISPLAY=:0 && nohup xdg-open "http://localhost" >/dev/null 2>&1 &
+disown
+
 EOF
 
     echo "Datos guardados en: $BASE_DIR y HTML generado en $HTML_FILE"
