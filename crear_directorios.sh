@@ -125,7 +125,6 @@ EOF
 
     echo "Datos guardados en: $BASE_DIR y HTML generado en $HTML_FILE"
 
-    # Esperar 10 minutos antes de la siguiente ejecución
-    sleep 600
+    sleep 120
 done
 
