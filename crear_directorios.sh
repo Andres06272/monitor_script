@@ -128,6 +128,6 @@ EOF
 
     echo "Datos guardados en: $BASE_DIR y HTML generado en $HTML_FILE"
 
-    sleep 120
+    sleep 30
 done
 
