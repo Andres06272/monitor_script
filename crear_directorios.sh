@@ -1,15 +1,17 @@
 #!/bin/bash
 set -e  # Detiene el script si ocurre un error
 
-while true; do
-    # Crear los directorios si no existen
-    mkdir -p /home/andres/Quiz_Monroy_2004/A/{B,C,D,E,F,G} \
-             /home/andres/Quiz_Monroy_2004/A/E/H \
-             /home/andres/Quiz_Monroy_2004/A/F/I \
-             /home/andres/Quiz_Monroy_2004/A/E/H/{J,K}
+# Configurar usuario y máquina remota
+REMOTE_USER="lredes11"
+REMOTE_IP="172.16.14.83"
+REMOTE_PASS="lredes11"
 
+while true; do
     # Definir la ruta base donde se guardarán los archivos
     BASE_DIR="/home/andres/Quiz_Monroy_2004/A/E/H/K"
+
+    # Crear los directorios si no existen
+    mkdir -p "$BASE_DIR"
 
     # Asegurar permisos adecuados en la carpeta
     chmod 755 "$BASE_DIR"
@@ -27,11 +29,10 @@ while true; do
 
     # Procesar los puertos abiertos y cerrados y guardarlos en puertos_estado.txt
     nmap -p- localhost -sT --reason | awk '
-    BEGIN { printf "%-10s %-10s %-20s %-10s %-15s\n", "PUERTO", "ESTADO", "SERVICIO", "PROTOCOLO", "MOTIVO"; 
-            print "--------------------------------------------------------------------------"; }
+    BEGIN { print "PUERTO ESTADO SERVICIO PROTOCOLO MOTIVO"; }
     /open|closed/ { 
         split($1, arr, "/");
-        printf "%-10s %-10s %-20s %-10s %-15s\n", arr[1], $2, $3, arr[2], $4; 
+        print arr[1], $2, $3, arr[2], $4; 
     }' > "$BASE_DIR/puertos_estado.txt"
 
     # Procesar todos los servicios en ejecución y guardarlos en servicios_estado.txt
@@ -40,15 +41,11 @@ while true; do
         split($1, arr, ".service");
         service = arr[1];
 
-        if ($4 == "running") {
-            estado = "UP";
-            cmd = "systemctl show -p MainPID " service " | cut -d= -f2"; 
-            cmd | getline pid;
-            close(cmd);
-        } else {
-            estado = "DOWN";
-            pid = "-";
-        }
+        estado = ($4 == "running") ? "UP" : "DOWN";
+
+        cmd = "systemctl show -p MainPID " service " | cut -d= -f2"; 
+        cmd | getline pid;
+        close(cmd);
 
         cmd = "systemctl is-enabled " service " 2>/dev/null";
         cmd | getline habilitado;
@@ -56,26 +53,23 @@ while true; do
 
         if (habilitado == "") habilitado = "unknown";
 
-        printf "%-40s %-10s %-15s %-10s\n", service, estado, habilitado, pid;
-    }' | sort -k3,3 -k2,2r > "$BASE_DIR/servicios_estado.txt"
+        print service, estado, habilitado, pid;
+    }' > "$BASE_DIR/servicios_estado.txt"
 
     # Procesar las redes WiFi disponibles y guardarlas en wifi_limpio.txt
     nmcli -t -f SSID,IN-USE,SIGNAL,FREQ,SECURITY dev wifi list | awk -F: '
-    BEGIN { printf "%-30s %-10s %-10s %-15s\n", "SSID", "POTENCIA", "FRECUENCIA", "SEGURIDAD";
-            print "--------------------------------------------------------------"; }
+    BEGIN { print "SSID POTENCIA FRECUENCIA SEGURIDAD"; }
     {
         if ($1 != "")
-            printf "%-30s %-10s %-10s %-15s\n", $1, $3 " dBm", $4 " GHz", ($5 == "WPA" || $5 == "WEP") ? "Encriptada" : "Abierta";
+            print $1, $3 "dBm", $4 "GHz", ($5 == "WPA" || $5 == "WEP") ? "Encriptada" : "Abierta";
     }' > "$BASE_DIR/wifi_limpio.txt"
 
-    # Copiar los archivos al servidor web (requiere sudo)
+    # Copiar los archivos al servidor web
     sudo cp "$BASE_DIR"/*.txt /var/www/html/
     sudo chmod 644 /var/www/html/*.txt
 
     # Generar el HTML en /var/www/html/index.html
-    HTML_FILE="/var/www/html/index.html"
-
-    cat <<EOF | sudo tee "$HTML_FILE" > /dev/null
+    cat <<EOF | sudo tee /var/www/html/index.html > /dev/null
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -100,30 +94,26 @@ while true; do
 </html>
 EOF
 
-    # Configurar la IP y usuario de la máquina remota
-    REMOTE_USER="lredes11"
-    REMOTE_IP="172.16.14.83"
-    REMOTE_PASS="lredes11"
-
     # Enviar archivos a la máquina remota
     sshpass -p "$REMOTE_PASS" rsync -avz -e "ssh -o StrictHostKeyChecking=no" /var/www/html/ "$REMOTE_USER@$REMOTE_IP:/home/$REMOTE_USER/html_temp"
 
     # Ejecutar comandos en la máquina remota
     sshpass -p "$REMOTE_PASS" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_IP" <<EOF
-        echo '$REMOTE_PASS' | sudo -S mkdir -p /var/www/html
-        echo '$REMOTE_PASS' | sudo -S cp -r /home/$REMOTE_USER/html_temp/* /var/www/html/
-        echo '$REMOTE_PASS' | sudo -S chmod -R 755 /var/www/html
-        echo '$REMOTE_PASS' | sudo -S rm -rf /home/$REMOTE_USER/html_temp
-        echo '$REMOTE_PASS' | sudo -S systemctl restart apache2
-
-        # Dar permisos para abrir la GUI
+        echo "$REMOTE_PASS" | sudo -S bash <<EOS
+        mkdir -p /var/www/html
+        cp -r /home/$REMOTE_USER/html_temp/* /var/www/html/
+        chmod -R 755 /var/www/html
+        rm -rf /home/$REMOTE_USER/html_temp
+        systemctl restart apache2
+EOS
+        # Abrir la GUI en la máquina remota
         export DISPLAY=:0
-        xhost +
         nohup xdg-open "http://localhost" >/dev/null 2>&1 &
         disown
 EOF
 
-    echo "Datos guardados en: $BASE_DIR y HTML generado en $HTML_FILE"
+    echo "Datos guardados en: $BASE_DIR y HTML generado en /var/www/html/index.html"
 
     sleep 60
 done
+
