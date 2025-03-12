@@ -119,15 +119,11 @@ EOF
         # Dar permisos para abrir la GUI
         export DISPLAY=:0
         xhost +
-        if ! pgrep -f "firefox.*localhost" >/dev/null; then
         nohup xdg-open "http://localhost" >/dev/null 2>&1 &
         disown
-        fi
-
 EOF
 
     echo "Datos guardados en: $BASE_DIR y HTML generado en $HTML_FILE"
 
-    sleep 30
+    sleep 120
 done
-
