@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e  # Detiene el script si ocurre un error
 
+# Manejo de señales para detener el script correctamente
+trap "echo 'Deteniendo servicio...'; exit 0" SIGTERM SIGINT
+
 while true; do
     # Crear los directorios si no existen
     mkdir -p /home/andres/Quiz_Monroy_2004/A/{B,C,D,E,F,G} \
@@ -100,32 +103,8 @@ while true; do
 </html>
 EOF
 
-    # Configurar la IP y usuario de la máquina remota
-    REMOTE_USER="lredes11"
-    REMOTE_IP="172.16.14.83"
-    REMOTE_PASS="lredes11"
-
-    # Enviar archivos a la máquina remota
-    sshpass -p "$REMOTE_PASS" rsync -avz -e "ssh -o StrictHostKeyChecking=no" /var/www/html/ "$REMOTE_USER@$REMOTE_IP:/home/$REMOTE_USER/html_temp"
-
-    # Ejecutar comandos en la máquina remota
-    sshpass -p "$REMOTE_PASS" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_IP" <<EOF
-        echo '$REMOTE_PASS' | sudo -S mkdir -p /var/www/html
-        echo '$REMOTE_PASS' | sudo -S cp -r /home/$REMOTE_USER/html_temp/* /var/www/html/
-        echo '$REMOTE_PASS' | sudo -S chmod -R 755 /var/www/html
-        echo '$REMOTE_PASS' | sudo -S rm -rf /home/$REMOTE_USER/html_temp
-        echo '$REMOTE_PASS' | sudo -S systemctl restart apache2
-
-        # Dar permisos para abrir la GUI
-        export DISPLAY=:0
-        xhost +
-        nohup xdg-open "http://localhost" >/dev/null 2>&1 &
-        disown
-EOF
-
     echo "Datos guardados en: $BASE_DIR y HTML generado en $HTML_FILE"
 
     # Esperar 10 minutos antes de la siguiente ejecución
     sleep 600
 done
-
